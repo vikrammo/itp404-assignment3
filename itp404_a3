@@ -1,0 +1,53 @@
+<html>
+<head>
+	<meta charse="UTF-8">
+		<title>AJAX Demo</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="handlebars-v4.0.5.js"></script>
+		<script type="template/handlebars" id="reddit-list-template">
+			{{#each .}}
+			<div class="Object">
+				<h2>Score: {{data.score}}</h2>
+				<p><a href="{{data.url}}">Title: {{data.title}}</a></p>
+				<p>Comments: {{data.num_comments}}</p>
+				<p>{{#if data.archived}}
+  						Archived
+				   {{else}}
+  						Not Archived
+				   {{/if}}
+				</p>
+			</div>
+			{{/each}}
+		</script>
+		<script>
+			var json;
+
+//was getting an error using promise so used this instead
+
+			function getList(){
+				var que=document.getElementById("searchtext").value;
+				$.ajax({
+					url: 'https://www.reddit.com/r/'+que+'.json',
+					type: 'get',
+					success: function(result){
+						json=result;
+						change();
+					}
+				});
+			}
+			function change(){
+				var source = $('#reddit-list-template').html();
+				var template = Handlebars.compile(source);
+				var html = template(json.data.children);
+				$('#reddit-list').html(html);
+			}
+		</script>
+	</head>
+
+	<body>
+		<input type="text" name="redditSearch" id="searchtext">
+		<input type="button" onclick="getList()" value="Search">
+		<div id="reddit-list"></div>
+	</body>
+
+</html>
